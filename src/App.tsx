@@ -1,11 +1,12 @@
 import { useState } from "react";
-import ReportesScreen from "./components/views/ReportesScreen/ReportesScreen";
+import AppRouters from "./components/routes/AppRouters";
+
 
 function App() {
 
   return (
     <>
-     <ReportesScreen/>
+     <AppRouters/>
     </>
   );
 }

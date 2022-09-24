@@ -19,6 +19,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { GoAlert, GoChecklist } from "react-icons/go";
 import React, { Children } from "react";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -78,6 +79,8 @@ interface Props {
 }
 
 const AppBar2 = (props: Props) => {
+  const navigate = useNavigate();
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -133,7 +136,7 @@ const AppBar2 = (props: Props) => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={()=>navigate(`/coordinadora-react/home`)}>
               <ListItemIcon>
                 <GoAlert />
               </ListItemIcon>
@@ -144,7 +147,7 @@ const AppBar2 = (props: Props) => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={()=>navigate(`/coordinadora-react/soluciones`)}>
               <ListItemIcon>
                 <GoChecklist />
               </ListItemIcon>
