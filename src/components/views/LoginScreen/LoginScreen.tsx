@@ -1,12 +1,55 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo.svg";
+import { useAuth } from "../../../hooks/useAuth";
 
 const LoginScreen = () => {
   const navigate = useNavigate();
+  const auth = getAuth();
+  const { isAuthFirestore } = useAuth();
+  const USER_DB = "helpcoor@unisabaneta.edu.co";
+  const PW_DB = "YrQ@V39Q9mF@";
+  const [datosLogin, setdatosLogin] = useState({ email: "", code: "" });
+
+
+  const onChange = (
+    event: React.SyntheticEvent<Element, Event> | undefined
+  ) => {
+    if (event) {
+      var { name, value } = event.currentTarget as HTMLInputElement;
+      if (name == "email") setdatosLogin({ ...datosLogin, email: value });
+      if (name == "code") setdatosLogin({ ...datosLogin, code: value });
+    }
+  };
+
+  const onClick = () => {
+    var { email, code } = datosLogin;
+    if (email == "" || code == "") {
+      alert("No hay datos de ingreso!");
+    } else {
+      signInWithEmailAndPassword(auth, USER_DB, PW_DB)
+      .then(async (userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        const isAuth = await isAuthFirestore(email, code);
+        if (isAuth == true) {
+          navigate(`/coordinadora-react/home`);
+        } else {
+          alert("Email o contraseña inconrrectos!");
+        }
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert("Email o contraseña inconrrectos!");
+      });
+    }
+  };
+
   return (
     <div
       style={{
@@ -24,28 +67,42 @@ const LoginScreen = () => {
           flexDirection: "column",
           alignItems: "center",
           width: "400px",
-          padding:5
+          padding: 5,
         }}
       >
         <div>
           <img src={logo} alt="" width={"100px"} />
         </div>
         <div>
-          <TextField id="outlined-basic" label="Email" variant="outlined" />
+          <TextField
+            name="email"
+            id="outlined-basic"
+            label="Email"
+            variant="outlined"
+            onChange={onChange}
+          />
         </div>
         <div
           style={{
             marginTop: "25px",
           }}
         >
-          <TextField id="outlined-basic" label="Codigo" variant="outlined" />
+          <TextField
+            name="code"
+            id="outlined-basic"
+            label="Codigo"
+            variant="outlined"
+            onChange={onChange}
+          />
         </div>
         <div
           style={{
             marginTop: "25px",
           }}
         >
-          <Button variant="contained" onClick={()=>navigate(`/coordinadora-react/home`)}>Ingresar</Button>
+          <Button variant="contained" onClick={onClick}>
+            Ingresar
+          </Button>
         </div>
       </Paper>
     </div>

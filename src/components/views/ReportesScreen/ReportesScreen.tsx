@@ -5,7 +5,8 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useListReports } from "../../../hooks/useListReports";
 import AppBar2 from "../../common/AppBar";
 
 function createData(
@@ -33,31 +34,42 @@ const rows = [
 ];
 
 const ReportesScreen = () => {
+  const { getListReports } = useListReports();
+  const { searchReports, tikects } = getListReports();
+
+  useEffect(() => {
+    searchReports();
+    console.log("Cantidad de datos obtenidos:",tikects.length)
+  }, []);
+  console.log("Cantidad de datos obtenidos-v2:",tikects.length)
+
   return (
     <div>
       <AppBar2>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-            <TableHead sx={{backgroundColor:"#9097BB"}}>
+            <TableHead sx={{ backgroundColor: "#9097BB" }}>
               <TableRow>
                 <TableCell>Asunto</TableCell>
-                <TableCell>Reporte</TableCell>
+                {/* <TableCell>Reporte</TableCell> */}
+                <TableCell>Reportante</TableCell>
                 <TableCell>Encargado</TableCell>
                 <TableCell>Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.Asunto}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{row.Asunto}</TableCell>
-                  <TableCell>{row.Reporte}</TableCell>
-                  <TableCell>{row.Encargado}</TableCell>
-                  <TableCell>{row.Estado}</TableCell>
-                </TableRow>
-              ))}
+              {Array.isArray(tikects) &&
+                tikects.map((row, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{row.Asunto}</TableCell>
+                    <TableCell>{row.Reportante}</TableCell>
+                    <TableCell>{row.Encargado}</TableCell>
+                    <TableCell>{row.Estado}</TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
