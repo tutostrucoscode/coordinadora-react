@@ -11,6 +11,10 @@ export const useAuth = () => {
     );
     const usersSnapshot = await getDocs(usersQuery);
     if (usersSnapshot.size == 1) {
+      usersSnapshot.forEach((user) => {
+        localStorage.setItem('email-auth', user.data().email);
+        localStorage.setItem('code-auth', user.data().code);
+      })
       return true;
     } else {
       return false;

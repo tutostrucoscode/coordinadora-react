@@ -4,7 +4,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
-import logo2 from "../../../assets/logos/boltra-08.svg";
+import logo2 from "../../../assets/logos/boltra-14.svg";
 
 import { useAuth } from "../../../hooks/useAuth";
 
@@ -38,10 +38,6 @@ const LoginScreen = () => {
           const user = userCredential.user;
           const isAuth = await isAuthFirestore(email, code);
           if (isAuth == true) {
-            if(email){
-              console.log("Se guardo el email:",email);          
-              localStorage.setItem('email-auth', email);
-            }
             navigate(`/coordinadora-react/home`);
           } else {
             alert("Email o contraseña inconrrectos!");
@@ -72,7 +68,7 @@ const LoginScreen = () => {
           flexDirection: "column",
           alignItems: "center",
           width: "328px",
-          height: "312px",
+          height: "500px",
           padding: "24px",
           gap: "24px",
           boxShadow:
@@ -84,8 +80,8 @@ const LoginScreen = () => {
           <img
             src={logo2}
             alt=""
-            width="181px"
-            style={{ margin: "-69px 0px" }}
+            width="150px"
+            style={{ margin: "-5px 0px" }}
           />
         </div>
         <div>

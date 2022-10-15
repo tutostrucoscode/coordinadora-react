@@ -12,20 +12,21 @@ import AppBar2 from "../../common/AppBar";
 import IconButton from "@mui/material/IconButton";
 import { db } from "../../../firebase/firebase-config";
 import { doc, updateDoc } from "firebase/firestore";
+import CircularIndeterminate from "../../common/Progress";
 
 const ReportesSupportScreen = () => {
-  const { getListReports } = useListReportsQuery();
-  const { searchReports, tikects } = getListReports();
+  const { getListReportsQuery } = useListReportsQuery();
+  const { searchReports, tikects } = getListReportsQuery();
 
   useEffect(() => {
-    searchReports("2555");
+    searchReports("27856");
     console.log("Cantidad de datos obtenidos:", tikects);
   }, []);
 
   const onClickAddReport = async (IdRep: string) => {
     const ticketsRef = doc(db, "tickets", IdRep);
     await updateDoc(ticketsRef, {
-      receiverCode: "2555",
+      receiverCode: "27856",
       state: "PROCESO",
     });
     console.log("onClickAddReport:", IdRep);
@@ -49,13 +50,12 @@ const ReportesSupportScreen = () => {
       <AppBar2>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-            <TableHead sx={{ backgroundColor: "#9097BB" }}>
+            <TableHead sx={{ backgroundColor: "#0059A6" }}>
               <TableRow>
-                <TableCell>Asunto</TableCell>
                 {/* <TableCell>Reporte</TableCell> */}
-                <TableCell>Reportante</TableCell>
-                <TableCell>Encargado</TableCell>
-                <TableCell>Estado</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }} >Reportante</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }} >Encargado</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }} >Estado</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -66,14 +66,13 @@ const ReportesSupportScreen = () => {
                     key={index}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell>{row.Asunto}</TableCell>
-                    <TableCell>{row.Reportante}</TableCell>
-                    <TableCell>{row.Encargado}</TableCell>
-                    <TableCell>{dictionaryStatus(row.Estado)}</TableCell>
+                    <TableCell>{row.sederName}</TableCell>
+                    <TableCell>{row.receiverName}</TableCell>
+                    <TableCell>{dictionaryStatus(row.state)}</TableCell>
                     <TableCell>
                       <IconButton
                         aria-label="add_report"
-                        onClick={() => onClickAddReport(row.IdRep)}
+                        onClick={() => onClickAddReport(row.uid)}
                       >
                         <LibraryAddIcon />
                       </IconButton>
@@ -82,6 +81,7 @@ const ReportesSupportScreen = () => {
                 ))}
             </TableBody>
           </Table>
+          {(tikects.length == 0) ? <CircularIndeterminate /> : <div></div>}
         </TableContainer>
       </AppBar2>
     </div>

@@ -20,6 +20,7 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { GoAlert, GoChecklist } from "react-icons/go";
 import React, { Children, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import logoSignature from "../../assets/logos/logo-letra.png";
 
 const drawerWidth = 240;
 
@@ -96,11 +97,11 @@ const AppBar2 = (props: Props) => {
 
   useEffect(() => {
     const emailAuthLocal = localStorage.getItem('email-auth');
-    if(emailAuthLocal){
-      seEmailAuth(emailAuthLocal);  
+    if (emailAuthLocal) {
+      seEmailAuth(emailAuthLocal);
     }
   }, [])
-  
+
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -116,10 +117,19 @@ const AppBar2 = (props: Props) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h1" component="div" fontSize="24px" sx={{flexGrow: 1}} color={"black"}>
-            HELPCOOR
-          </Typography>
-          <Typography variant="body1" component="p" color={"black"}>
+          <div>
+            <img
+              src={logoSignature}
+              alt=""
+              width="120px"
+            />
+          </div>
+          <Typography variant="body1" component="p" color={"black"} style={{
+            position: 'absolute',
+            left: '90%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}>
             {emailAuth}
           </Typography>
         </Toolbar>
@@ -149,7 +159,7 @@ const AppBar2 = (props: Props) => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={()=>navigate(`/coordinadora-react/home`)}>
+            <ListItemButton onClick={() => navigate(`/coordinadora-react/home`)}>
               <ListItemIcon>
                 <GoAlert />
               </ListItemIcon>
@@ -160,7 +170,7 @@ const AppBar2 = (props: Props) => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={()=>navigate(`/coordinadora-react/asignados`)}>
+            <ListItemButton onClick={() => navigate(`/coordinadora-react/asignados`)}>
               <ListItemIcon>
                 <GoChecklist />
               </ListItemIcon>
