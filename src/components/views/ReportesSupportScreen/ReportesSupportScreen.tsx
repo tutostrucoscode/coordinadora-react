@@ -7,18 +7,18 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
-import { useListReports } from "../../../hooks/useListReports";
+import { useListReportsQuery } from "../../../hooks/useListReports";
 import AppBar2 from "../../common/AppBar";
 import IconButton from "@mui/material/IconButton";
 import { db } from "../../../firebase/firebase-config";
 import { doc, updateDoc } from "firebase/firestore";
 
-const ReportesScreen = () => {
-  const { getListReports } = useListReports();
+const ReportesSupportScreen = () => {
+  const { getListReports } = useListReportsQuery();
   const { searchReports, tikects } = getListReports();
 
   useEffect(() => {
-    searchReports();
+    searchReports("2555");
     console.log("Cantidad de datos obtenidos:", tikects);
   }, []);
 
@@ -26,7 +26,7 @@ const ReportesScreen = () => {
     const ticketsRef = doc(db, "tickets", IdRep);
     await updateDoc(ticketsRef, {
       receiverCode: "2555",
-      state: 2,
+      state: "PROCESO",
     });
     console.log("onClickAddReport:", IdRep);
   };
@@ -88,4 +88,4 @@ const ReportesScreen = () => {
   );
 };
 
-export default ReportesScreen;
+export default ReportesSupportScreen;

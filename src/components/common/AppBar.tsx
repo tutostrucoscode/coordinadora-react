@@ -18,7 +18,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { GoAlert, GoChecklist } from "react-icons/go";
-import React, { Children } from "react";
+import React, { Children, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -49,13 +49,13 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
-  backgroundColor: "#C3C9EB",
+  backgroundColor: "#FFFFFF",
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    backgroundColor: "#C3C9EB",
+    backgroundColor: "#FFFFFF",
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["margin", "width"], {
@@ -83,6 +83,8 @@ const AppBar2 = (props: Props) => {
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [emailAuth, seEmailAuth] = React.useState("");
+
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -91,6 +93,14 @@ const AppBar2 = (props: Props) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    const emailAuthLocal = localStorage.getItem('email-auth');
+    if(emailAuthLocal){
+      seEmailAuth(emailAuthLocal);  
+    }
+  }, [])
+  
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -106,8 +116,11 @@ const AppBar2 = (props: Props) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" color={"black"}>
+          <Typography variant="h1" component="div" fontSize="24px" sx={{flexGrow: 1}} color={"black"}>
             HELPCOOR
+          </Typography>
+          <Typography variant="body1" component="p" color={"black"}>
+            {emailAuth}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -147,11 +160,11 @@ const AppBar2 = (props: Props) => {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={()=>navigate(`/coordinadora-react/soluciones`)}>
+            <ListItemButton onClick={()=>navigate(`/coordinadora-react/asignados`)}>
               <ListItemIcon>
                 <GoChecklist />
               </ListItemIcon>
-              <ListItemText primary={"Soluciones"} />
+              <ListItemText primary={"Atentiendo"} />
             </ListItemButton>
           </ListItem>
         </List>
