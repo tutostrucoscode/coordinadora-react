@@ -6,30 +6,41 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
+import { BiLockOpenAlt } from "react-icons/bi";
+import MessageIcon from "@mui/icons-material/Message";
 import { useListReportsQuery } from "../../../hooks/useListReports";
 import AppBar2 from "../../common/AppBar";
 import IconButton from "@mui/material/IconButton";
-import { db } from "../../../firebase/firebase-config";
-import { doc, updateDoc } from "firebase/firestore";
 import CircularIndeterminate from "../../common/Progress";
+import { useAppSelector } from "../../../redux/hooks/hooks";
+import InvoiceModal from "./InvoiceModal/InvoiceModal";
+import { Ticket } from "../../../models/Ticket";
+import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
 
 const ReportesSupportScreen = () => {
+  const [openModal, setOpenModal] = useState(false);
+  const [infoRemport, setInfoRemport] = useState({ idReport: "" });
+
   const { getListReportsQuery } = useListReportsQuery();
-  const { searchReports, tikects } = getListReportsQuery();
+  const {
+    searchReportsProcess,
+    tikectsProcess,
+    searchReportsClosed,
+    tikectsClosed,
+  } = getListReportsQuery();
+  const { uid } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    searchReports("27856");
-    console.log("Cantidad de datos obtenidos:", tikects);
+    searchReportsProcess(uid);
+    searchReportsClosed(uid);
+    console.log("Cantidad de datos obtenidos:", tikectsProcess);
   }, []);
 
-  const onClickAddReport = async (IdRep: string) => {
-    const ticketsRef = doc(db, "tickets", IdRep);
-    await updateDoc(ticketsRef, {
-      receiverCode: "27856",
-      state: "PROCESO",
-    });
-    console.log("onClickAddReport:", IdRep);
+  const onClickAddReport = async (tiket: Ticket) => {
+    setInfoRemport({ idReport: tiket.uid });
+    setOpenModal(true);
+    console.log("onClickAddReport:", tiket);
   };
 
   const dictionaryStatus = (status: number) => {
@@ -45,6 +56,31 @@ const ReportesSupportScreen = () => {
     }
   };
 
+  const componentStatus = (status: number) => {
+    switch (status) {
+      case 1:
+        return (
+          <>
+            <Chip label="ABIERTO" color="primary" />
+          </>
+        );
+      case 2:
+        return (
+          <>
+            <Chip label="PROCESO" color="success" />
+          </>
+        );
+      case 3:
+        return (
+          <>
+            <Chip label="CERRADO" color="error" />
+          </>
+        );
+      default:
+        return <></>;
+    }
+  };
+
   return (
     <div>
       <AppBar2>
@@ -53,36 +89,83 @@ const ReportesSupportScreen = () => {
             <TableHead sx={{ backgroundColor: "#0059A6" }}>
               <TableRow>
                 {/* <TableCell>Reporte</TableCell> */}
-                <TableCell sx={{ color: "#FFFFFFFF" }} >Reportante</TableCell>
-                <TableCell sx={{ color: "#FFFFFFFF" }} >Encargado</TableCell>
-                <TableCell sx={{ color: "#FFFFFFFF" }} >Estado</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }}>Reportante</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }}>Encargado</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }} >Descripcion</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }}>Estado</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {Array.isArray(tikects) &&
-                tikects.map((row, index) => (
+              {Array.isArray(tikectsProcess) &&
+                tikectsProcess.map((row, index) => (
                   <TableRow
                     key={index}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell>{row.sederName}</TableCell>
                     <TableCell>{row.receiverName}</TableCell>
-                    <TableCell>{dictionaryStatus(row.state)}</TableCell>
+                    <TableCell>{row.description}</TableCell>
+                    <TableCell>{componentStatus(row.state)}</TableCell>
                     <TableCell>
-                      <IconButton
-                        aria-label="add_report"
-                        onClick={() => onClickAddReport(row.uid)}
-                      >
-                        <LibraryAddIcon />
-                      </IconButton>
+                      <Tooltip title="Atender">
+                        <IconButton
+                          aria-label="add_report"
+                          onClick={() => onClickAddReport(row)}
+                        >
+                          <MessageIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
           </Table>
-          {(tikects.length == 0) ? <CircularIndeterminate /> : <div></div>}
+          {tikectsProcess.length == 0 ? <CircularIndeterminate /> : <div></div>}
         </TableContainer>
+        <div style={{ marginTop: "50px" }}></div>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+            <TableHead sx={{ backgroundColor: "#0059A6" }}>
+              <TableRow>
+                {/* <TableCell>Reporte</TableCell> */}
+                <TableCell sx={{ color: "#FFFFFFFF" }}>Reportante</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }}>Encargado</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }}>Estado</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {Array.isArray(tikectsClosed) &&
+                tikectsClosed.map((row, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{row.sederName}</TableCell>
+                    <TableCell>{row.receiverName}</TableCell>
+                    <TableCell>{componentStatus(row.state)}</TableCell>
+                    <TableCell>
+                      <Tooltip title="Reabrir">
+                        <IconButton
+                          aria-label="add_report"
+                          onClick={() => onClickAddReport(row)}
+                        >
+                          <BiLockOpenAlt />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+          {tikectsClosed.length == 0 ? <CircularIndeterminate /> : <div></div>}
+        </TableContainer>
+        <InvoiceModal
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          infoRemport={infoRemport}
+        />
       </AppBar2>
     </div>
   );

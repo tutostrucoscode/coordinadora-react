@@ -13,20 +13,33 @@ import IconButton from "@mui/material/IconButton";
 import { db } from "../../../firebase/firebase-config";
 import { doc, updateDoc } from "firebase/firestore";
 import CircularIndeterminate from "../../common/Progress";
+import { useAppSelector } from "../../../redux/hooks/hooks";
+import Chip from "@mui/material/Chip";
 
 const ReportesScreen = () => {
+  const { uid } = useAppSelector((state) => state.auth);
+
   const { getListReports } = useListReports();
-  const { searchReports, tikects } = getListReports();
+  const { searchReports,searchReportsRealTime, tikects } = getListReports();
 
   useEffect(() => {
-    searchReports();
+    //searchReports();
+    const unsubscribe = searchReportsRealTime()
     console.log("Cantidad de datos obtenidos:", tikects);
+    return () => {
+      console.log("useConnectivityOnlineRealTime() useEffect(return)");
+      unsubscribe();
+    };
   }, []);
+
+
+  
 
   const onClickAddReport = async (IdRep: string) => {
     const ticketsRef = doc(db, "tickets", IdRep);
+    console.log("onClickAddReport.uid:",uid);
     await updateDoc(ticketsRef, {
-      receiverCode: "27856",
+      receiverCode: uid,
       state: 2,
     });
     console.log("onClickAddReport:", IdRep);
@@ -45,6 +58,19 @@ const ReportesScreen = () => {
     }
   };
 
+  const componentStatus = (status: number) =>{
+    switch (status) {
+      case 1:
+        return <><Chip label="ABIERTO" color="primary" /></>;
+      case 2:
+        return <><Chip label="PROCESO" color="success" /></>;
+      case 3:
+        return <><Chip label="CERRADO" color="error"  /></>;
+      default:
+        return <></>;
+    }
+  }
+
   return (
     <div>
       <AppBar2>
@@ -55,6 +81,7 @@ const ReportesScreen = () => {
                 {/* <TableCell>Reporte</TableCell> */}
                 <TableCell sx={{ color: "#FFFFFFFF" }} >Reportante</TableCell>
                 <TableCell sx={{ color: "#FFFFFFFF" }} >Encargado</TableCell>
+                <TableCell sx={{ color: "#FFFFFFFF" }} >Descripcion</TableCell>
                 <TableCell sx={{ color: "#FFFFFFFF" }} >Estado</TableCell>
                 <TableCell></TableCell>
               </TableRow>
@@ -68,7 +95,8 @@ const ReportesScreen = () => {
                   >
                     <TableCell>{row.sederName}</TableCell>
                     <TableCell>{row.receiverName}</TableCell>
-                    <TableCell>{dictionaryStatus(row.state)}</TableCell>
+                    <TableCell>{row.description}</TableCell>
+                    <TableCell>{componentStatus(row.state)}</TableCell>
                     <TableCell>
                       <IconButton
                         aria-label="add_report"

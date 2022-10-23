@@ -1,3 +1,8 @@
+import React, { Children, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { TiLockClosed } from "react-icons/ti";
+import { GoAlert, GoChecklist } from "react-icons/go";
+import { ImNewspaper } from "react-icons/im";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
@@ -11,16 +16,13 @@ import ListItemText from "@mui/material/ListItemText";
 import { styled, useTheme } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import { GoAlert, GoChecklist } from "react-icons/go";
-import React, { Children, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import logoSignature from "../../assets/logos/logo-letra.png";
+import { useAppDispatch } from "../../redux/hooks/hooks";
+import { startLogout } from "../../redux/actions/auth";
 
 const drawerWidth = 240;
 
@@ -81,6 +83,7 @@ interface Props {
 
 const AppBar2 = (props: Props) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -93,6 +96,11 @@ const AppBar2 = (props: Props) => {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleSignOut = () => {
+    dispatch(startLogout());
+    navigate(`/login`);
   };
 
   useEffect(() => {
@@ -175,6 +183,29 @@ const AppBar2 = (props: Props) => {
                 <GoChecklist />
               </ListItemIcon>
               <ListItemText primary={"Atentiendo"} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate(`/coordinadora-react/noticias`)}>
+              <ListItemIcon>
+                <ImNewspaper />
+              </ListItemIcon>
+              <ListItemText primary={"Noticias"} />
+            </ListItemButton>
+          </ListItem>
+          </List>
+          <Divider />
+        
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleSignOut()}>
+              <ListItemIcon>
+                <TiLockClosed />
+              </ListItemIcon>
+              <ListItemText primary={"Cerrar"} />
             </ListItemButton>
           </ListItem>
         </List>

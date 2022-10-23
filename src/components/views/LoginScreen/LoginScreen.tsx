@@ -7,11 +7,15 @@ import TextField from "@mui/material/TextField";
 import logo2 from "../../../assets/logos/boltra-14.svg";
 
 import { useAuth } from "../../../hooks/useAuth";
+import { useAppDispatch } from "../../../redux/hooks/hooks";
+import { login } from "../../../redux/actions/auth";
+import { setNotification } from "../../../redux/actions/ui";
 
 const LoginScreen = () => {
   const USER_DB = "helpcoor@unisabaneta.edu.co";
   const PW_DB = "YrQ@V39Q9mF@";
 
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const auth = getAuth();
   const { isAuthFirestore } = useAuth();
@@ -40,13 +44,13 @@ const LoginScreen = () => {
           if (isAuth == true) {
             navigate(`/coordinadora-react/home`);
           } else {
-            alert("Email o contraseña inconrrectos!");
+            dispatch(setNotification(true, "Los datos de ingreso son incorrectos.", "error"));
           }
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          alert("Email o contraseña inconrrectos!");
+          dispatch(setNotification(true, "Las key caducaron contacta.", "error"));
         });
     }
   };
@@ -102,6 +106,7 @@ const LoginScreen = () => {
             variant="outlined"
             onChange={onChange}
             sx={{ width: "280px", height: "56px" }}
+            type="password"
           />
         </div>
         <div
