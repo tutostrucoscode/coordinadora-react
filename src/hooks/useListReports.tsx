@@ -82,30 +82,37 @@ const getUserName = async (code: string): Promise<string | null> => {
 
 export const useListReportsQuery = () => {
   const getListReportsQuery = () => {
+
+     //-----------TICKETS EN PROCESO--------------   
     const [tikectsProcess, setTikectsProcess] = useState<Ticket[]>([]);
-    const searchReportsProcess = async (receiverCode: string) => {
+    const searchReportsProcess = (receiverCode: string) => {
       const ticketsQuery = query(
         collection(db, "tickets"),
         where("state", "==", 2),
         where("receiverCode", "==", receiverCode)
       );
-      const ticketsSnapshot = await getDocs(ticketsQuery);
-      if (ticketsSnapshot.size > 0) {
-        const reportsList: Ticket[] = [];
+      //const ticketsSnapshot = await getDocs(ticketsQuery);
 
-        for (let index = 0; index < ticketsSnapshot.docs.length; index++) {
-          const ticket: Ticket = ticketsSnapshot.docs[index].data() as Ticket;
-          ticket.sederName = await getUserName(ticket.sederCode);
-          ticket.receiverCode != null
-            ? (ticket.receiverName = await getUserName(ticket.receiverCode))
-            : (ticket.receiverName = "Sin asignar");
-          reportsList.push(ticket);
+      const unsubscribe = onSnapshot(ticketsQuery, async (ticketSnapshot) => {
+        if(ticketSnapshot.size > 0){
+            const reportsList: Ticket[] = [];  
+            for (let index = 0; index < ticketSnapshot.docs.length; index++) {
+              const ticket: Ticket = ticketSnapshot.docs[index].data() as Ticket;
+              ticket.sederName = await getUserName(ticket.sederCode);
+              ticket.receiverCode != null
+                ? (ticket.receiverName = await getUserName(ticket.receiverCode))
+                : (ticket.receiverName = "Sin asignar");
+              reportsList.push(ticket);
+            }
+            console.log("reportsList:", reportsList);
+            console.log("reportsList.length:", reportsList.length);
+            setTikectsProcess(reportsList);
+          
         }
-        console.log("reportsList:", reportsList);
-        console.log("reportsList.length:", reportsList.length);
-        setTikectsProcess(reportsList);
-      }
+      });
+      return unsubscribe;
     };
+    //-------------------------
 
     const [tikectsClosed, setTikectsClosed] = useState<Ticket[]>([]);
     const searchReportsClosed = async (receiverCode: string) => {
@@ -131,6 +138,10 @@ export const useListReportsQuery = () => {
         setTikectsClosed(reportsList);
       }
     };
+
+
+
+
 
     const [news, setNews] = useState<News[]>([]);
     const searchNews = async () => {

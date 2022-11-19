@@ -32,9 +32,13 @@ const ReportesSupportScreen = () => {
   const { uid } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    searchReportsProcess(uid);
+    const unsubscribeProcess = searchReportsProcess(uid);
     searchReportsClosed(uid);
     console.log("Cantidad de datos obtenidos:", tikectsProcess);
+    return () => {
+      console.log("useConnectivityOnlineRealTime() useEffect(return)");
+      unsubscribeProcess();
+    };
   }, []);
 
   const onClickAddReport = async (tiket: Ticket) => {

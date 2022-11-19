@@ -10,7 +10,13 @@ import { useAuth } from "../../../hooks/useAuth";
 import { useAppDispatch } from "../../../redux/hooks/hooks";
 import { login } from "../../../redux/actions/auth";
 import { setNotification } from "../../../redux/actions/ui";
-
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import OutlinedInput from "@mui/material/OutlinedInput";
+interface State {
+  showPassword: boolean;
+}
 const LoginScreen = () => {
   const USER_DB = "helpcoor@unisabaneta.edu.co";
   const PW_DB = "YrQ@V39Q9mF@";
@@ -20,7 +26,9 @@ const LoginScreen = () => {
   const auth = getAuth();
   const { isAuthFirestore } = useAuth();
   const [datosLogin, setdatosLogin] = useState({ email: "", code: "" });
-
+  const [values, setValues] = React.useState<State>({
+    showPassword: false,
+  });
   const onChange = (
     event: React.SyntheticEvent<Element, Event> | undefined
   ) => {
@@ -54,7 +62,20 @@ const LoginScreen = () => {
         });
     }
   };
+  
 
+  const handleClickShowPassword = () => {
+    setValues({
+      ...values,
+      showPassword: !values.showPassword,
+    });
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  
   return (
     <div
       style={{
@@ -99,14 +120,25 @@ const LoginScreen = () => {
           />
         </div>
         <div>
-          <TextField
+          <OutlinedInput
             name="code"
             id="outlined-basic"
             label="Codigo"
-            variant="outlined"
             onChange={onChange}
             sx={{ width: "280px", height: "56px" }}
-            type="password"
+            type={values.showPassword ? 'text' : 'password'}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
           />
         </div>
         <div
